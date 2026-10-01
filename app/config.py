@@ -4,8 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings:
-   # --- GEMINI EMBEDDINGS ---
+   # --- EMBEDDINGS ---
    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+   HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API")
 
    # --- VECTOR DB (QDRANT) ---
    QDRANT_URL = os.getenv("QDRANT_CLUSTER_ENDPOINT")
