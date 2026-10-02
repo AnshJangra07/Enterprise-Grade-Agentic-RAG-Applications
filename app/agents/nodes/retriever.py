@@ -22,7 +22,7 @@ def retriever_node(state: AgentState):
          reranked_content = rerank_documents(query, doc_contents, top_n=5)
          logfire.info("Reranking Complete. Kept top 5 most relevant chunks")
 
-      formatted_docs = [f"CONTENT: {doc}" for doc in rerank_documents]
+      formatted_docs = [f"CONTENT: {doc}" for doc in reranked_content]
 
    return {
       "documents" : formatted_docs,

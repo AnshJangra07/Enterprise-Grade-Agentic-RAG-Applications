@@ -20,7 +20,7 @@ def chunk_text(text: str, chunk_size: int = 1500) -> List[str]:
          else:
                if current_chunk.strip():
                   chunks.append(current_chunk.strip())
-               current_chunk += p + "\n\n"
+               current_chunk = p + "\n\n"
       
       if current_chunk.strip():
          chunks.append(current_chunk.strip())

@@ -4,7 +4,7 @@ import logfire
 from langchain_huggingface import HuggingFaceEmbeddings
 from app.config import settings
 
-BATCH_SIZE = 16
+BATCH_SIZE = 8
 # _GEMINI_DIM = 3072
 _HUGGINGFACE_DIM = 1024
 _FALLBACK_DIM = 768  # all-mpnet-base-v2
@@ -26,7 +26,7 @@ def _probe_huggingface():
         model = HuggingFaceEmbeddings(
             model_name="BAAI/bge-m3",
             model_kwargs={"device": "cuda", "token": settings.HUGGINGFACE_API_KEY},
-            encode_kwargs={"normalize_embeddings": True},
+            encode_kwargs={"normalize_embeddings": True, "batch_size": 8},
         )
         model.embed_query("probe")
         logfire.info("Hugging Face embeddings ready (BAAI/bge-m3, 1024-dim).")
