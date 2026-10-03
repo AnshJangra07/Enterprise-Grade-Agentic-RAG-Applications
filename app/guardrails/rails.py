@@ -1,5 +1,3 @@
-import re
-
 import logfire
 from langchain_groq import ChatGroq
 from nemoguardrails import RailsConfig, LLMRails
@@ -9,37 +7,7 @@ from app.config import settings
 from app.guardrails.colang_rules import COLANG_CONTENT, YAML_CONTENT, RAIL_INDICATORS
 
 
-OFFTOPIC_PATTERNS = (
-    "tell me a joke",
-    "what is the weather",
-    "what is 2 plus 2",
-    "what is 2+2",
-    "who won the game",
-    "recommend a movie",
-    "capital of france",
-    "what should i eat",
-    "restaurant near me",
-    "math homework",
-    "history",
-    "poem",
-    "movie",
-    "weather today",
-    "good restaurant",
-)
-
-
 _rails: LLMRails | None = None
-
-
-def _normalize_message(message: str) -> str:
-    return re.sub(r"[^a-z0-9\s]", " ", message.lower()).strip()
-
-
-def is_off_topic(message: str) -> bool:
-    normalized = _normalize_message(message)
-    if not normalized:
-        return False
-    return any(pattern in normalized for pattern in OFFTOPIC_PATTERNS)
 
 
 def initialize_rails() -> None:
@@ -78,13 +46,6 @@ def guard(message: str) -> tuple[bool, str | None]:
                                 skip the RAG pipeline entirely.
         (False, None)          — message is clean; proceed to LangGraph.
     """
-    if is_off_topic(message):
-        logfire.info(f"Guardrails fired | off-topic query='{message[:80]}'")
-        return True, (
-            "I'm an Enterprise IT Assistant focused on Kubernetes, Intel hardware, "
-            "and networking. I can't help with that — but ask me anything technical!"
-        )
-
     if _rails is None:
         logfire.warning("Guardrails not initialised — skipping gate.")
         return False, None
