@@ -16,21 +16,8 @@ This application demonstrates a complete end-to-end agentic RAG architecture:
 
 The system is intended for enterprise IT use cases and is built around a structured multi-step pipeline:
 
-```text
-Streamlit
-  ↓
-FastAPI
-  ↓
-NeMo Guardrails
-  ↓
-LangGraph Planner
-  ↓
-Qdrant Retrieval + Reranking
-  ↓
-Portkey Gateway
-  ↓
-Groq LLM
-```
+![Enterprise-Grade Agentic RAG Architecture](Architecture.png)
+
 
 ## Core Features
 
@@ -120,15 +107,17 @@ Groq LLM
 
 ## Screenshots
 
-The project screenshots are stored in the `screenshots/` folder and are useful for validating the UI, flows, and demo behavior.
+### Screenshot 1
 
-Current saved screenshots:
+![Application screenshot 1](screenshots/1.png)
 
-- `screenshots/1.png`
-- `screenshots/2.png`
-- `screenshots/3.png`
+### Screenshot 2
 
-These screenshots were created to document the behavior of the app during testing and demo validation.
+![Application screenshot 2](screenshots/2.png)
+
+### Screenshot 3
+
+![Application screenshot 3](screenshots/3.png)
 
 ## Prerequisites
 
