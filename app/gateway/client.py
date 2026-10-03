@@ -1,5 +1,3 @@
-import os
-
 import logfire
 from portkey_ai import Portkey, createHeaders, PORTKEY_GATEWAY_URL
 from langchain_openai import ChatOpenAI
@@ -7,8 +5,15 @@ from langchain_openai import ChatOpenAI
 from app.config import settings
 
 
-GATEWAY_CONFIG = os.getenv("PORTKEY_GATEWAY_CONFIG")
-portkey_client = Portkey(api_key=settings.PORTKEY_API_KEY) if settings.PORTKEY_API_KEY else None
+GATEWAY_CONFIG = settings.GATEWAY_CONFIG
+portkey_client = (
+    Portkey(
+        api_key=settings.PORTKEY_API_KEY,
+        config=GATEWAY_CONFIG,
+    )
+    if settings.PORTKEY_API_KEY
+    else None
+)
 
 
 def get_langchain_llm(feature: str = "rag") -> ChatOpenAI:

@@ -85,9 +85,10 @@ def generate_node(state: AgentState):
             "final_answer" : content,
             "status" : status,
             "plan" : plan_update,
+            "documents": state.get("documents", []),
             "messages" : [{"role":"assistant","content":content}]
          }
 
       except Exception as e:
-         logfire.error(f"LLM Genration failed: {e}")
+         logfire.error("LLM Generation failed", error=str(e))
          raise e

@@ -37,7 +37,7 @@ USER_AVATAR = "👤"
 # session managment
 if "session_id" not in st.session_state:
    st.session_state.session_id = str(uuid.uuid4())
-   logfire.info("New User Session Created : {st.session_state.session_id}")
+   logfire.info("New User Session Created", session_id=st.session_state.session_id)
 
 if "messages" not in st.session_state:
    st.session_state.messages = []
@@ -51,7 +51,7 @@ with st.sidebar:
    st.info(f"Memory ID: {st.session_state.session_id[:8]}")
 
    if st.button("Clear History and Memory", width="stretch", type="primary"):
-      logfire.warn(f"Memory Wipe Triggered for seesion: {st.session_state.session_id}")
+      logfire.warning("Memory wipe triggered", session_id=st.session_state.session_id)
       st.session_state.messages = []
       st.session_state.session_id = str(uuid.uuid4())
       st.rerun()
@@ -74,7 +74,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Ask about you documentation..."):
    # Start Trace: User Interaction
    with logfire.span("User Chat Interaction",user_query=prompt,session_id=st.session_state.session_id) :
-      
+
       st.session_state.messages.append({"role":"user","content":prompt})
       with st.chat_message("user", avatar=USER_AVATAR):
          st.markdown(prompt)
@@ -115,7 +115,7 @@ if prompt := st.chat_input("Ask about you documentation..."):
 
 
             except Exception as e:
-               logfire.error(f"UI-Backend Connection Failed: {e}")
+               logfire.error("UI-Backend Connection Failed", error=str(e))
                status.update(label="Request Failed", state="error")
                st.error(f"Unable to get a response: {e}")
                st.stop()

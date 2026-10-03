@@ -97,7 +97,7 @@ def query(request: QueryRequest):
          "sources": final_output.get("documents",[])
       }
    except Exception as e:
-      logfire.info(f"Backend Execution failed: {e}")
+      logfire.error("Backend execution failed", error=str(e))
       return {
          "question":q,
          "answer":"I apologize, but I encountered an internal error while processing",

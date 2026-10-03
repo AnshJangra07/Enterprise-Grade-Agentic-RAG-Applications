@@ -98,11 +98,6 @@ define flow farewell
 """
 
 YAML_CONTENT = """
-models:
-  - type: main
-    engine: openai
-    model: gpt-3.5-turbo
-
 instructions:
   - type: general
     content: |
@@ -110,7 +105,9 @@ instructions:
       - Kubernetes (deployment, scaling, operators, networking)
       - Intel hardware (CPUs, FPGAs, NICs, SRIOV)
       - Enterprise networking (SDN, VLANs, BGP, routing)
-      Only answer questions about these topics. Be professional and concise.
+
+      Only answer questions about these topics.
+      Be professional and concise.
 """
 
 # Distinctive substrings from each 'define bot' block above.
