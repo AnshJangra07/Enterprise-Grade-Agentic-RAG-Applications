@@ -24,7 +24,18 @@ def generate_node(state: AgentState):
 
 
 
-   if query == "CONVERSATIONAL":
+   if query in ("CONVERSATIONAL", "OFFTOPIC"):
+      if query == "OFFTOPIC":
+         logfire.info("Blocking off-topic request before retrieval.")
+         content = "I'm an Enterprise IT Assistant focused on Kubernetes, Intel hardware, and networking. I can't help with that — but ask me anything technical!"
+         return {
+            "final_answer": content,
+            "status": "Blocked by guardrails",
+            "plan": state["plan"] + ["Guardrail: Off-topic blocked"],
+            "documents": [],
+            "messages": [{"role": "assistant", "content": content}]
+         }
+
       logfire.info("Generating conversational response using memory.")
       prompt = f"""
       You are a friendly and helpful Enterprise AI Assistant.

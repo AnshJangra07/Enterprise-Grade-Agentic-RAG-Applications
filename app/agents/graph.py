@@ -18,7 +18,7 @@ def router_planner(state:AgentState):
    """
    Routes the workflow based on the planner's decision
    """
-   if state['current_query'] == "CONVERSATIONAL":
+   if state['current_query'] in ("CONVERSATIONAL", "OFFTOPIC"):
       return "responder"
    return "retriever"
 

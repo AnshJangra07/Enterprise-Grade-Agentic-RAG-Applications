@@ -48,6 +48,7 @@ define flow jailbreak protection
 
 define user express greeting
   "hello"
+  "hy"
   "hi"
   "hey"
   "good morning"
