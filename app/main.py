@@ -1,21 +1,21 @@
 # Critical : logfire MUST be configures before ALL other imports so that spans from all modules are captured from the start.
 
-import logfire
 import os
+
+import logfire
 from dotenv import load_dotenv
+from fastapi import FastAPI, Response, HTTPException
 
 load_dotenv()
 logfire.configure(token=os.getenv("LOGFIRE_TOKEN"))
 
 
-
 # Now safe to import app modules - logfire is already active
-from fastapi import FastAPI, Response
-from app.agents.graph import rag_agent
-from app.guardrails import initialize_rails, guard
-
 from pydantic import BaseModel
 from typing import Optional
+
+from app.agents.graph import rag_agent
+from app.guardrails import initialize_rails, guard
 
 
 app = FastAPI(title="Enterprise Agentic RAG API")
@@ -31,11 +31,9 @@ class QueryRequest(BaseModel):
    thread_id : Optional[str] = "default_user"
 
 
-
 @app.get("/")
 def home():
    return {"message": "Enterprise LangGraph RAG API is live."}
-
 
 
 @app.get("/graph")
@@ -50,8 +48,6 @@ def get_graph_image():
       return {"error": f"Could not generate graph : {e}"}
 
 
-
-
 @app.post("/query")
 def query(request: QueryRequest):
    """
@@ -61,47 +57,38 @@ def query(request: QueryRequest):
    thread_id = request.thread_id
 
    intial_state = {
-      "messages" : [{"role":"user", "content":q}],
-      "current_query" : q,
+      "messages": [{"role": "user", "content": q}],
+      "intent": "UNKNOWN",
+      "current_query": q,
       "documents": [],
       "plan": ["Start"],
-      "status": "Intializing Graph..."
+      "status": "Intializing Graph...",
+      "final_answer": "",
    }
 
-   # Configuration for memory - thread_id
-   config = {"configurable":{"thread_id":thread_id}}
+   config = {"configurable": {"thread_id": thread_id}}
 
    try:
-      # Gate 1 - Nemo Guardrails - blocks off-topic , jailbreaks, and handles dialog
       rail_fired, rail_response = guard(q)
       if rail_fired:
          logfire.info(f"Request block by guardrails , thread = {thread_id}")
          return {
-            "question":q,
-            "answer":rail_response,
+            "question": q,
+            "answer": rail_response,
             "thought_process": ["Intent: Guardrails Fired", "Retrieval: Skipped"],
-            "status":"Blocked by guardrails",
-            "sources": []
+            "status": "Blocked by guardrails",
+            "sources": [],
          }
 
-
-      # Gate 2 - LangGraph RAG pipeline
-      # Run the graph synchronously to preserve Logfire context variables
-      final_output = rag_agent.invoke(intial_state,config=config)
+      final_output = rag_agent.invoke(intial_state, config=config)
 
       return {
-         "question":q,
-         "answer":final_output.get("final_answer"),
+         "question": q,
+         "answer": final_output.get("final_answer"),
          "thought_process": final_output.get("plan"),
-         "status":final_output.get("status"),
-         "sources": final_output.get("documents",[])
+         "status": final_output.get("status"),
+         "sources": final_output.get("documents", []),
       }
    except Exception as e:
       logfire.error("Backend execution failed", error=str(e))
-      return {
-         "question":q,
-         "answer":"I apologize, but I encountered an internal error while processing",
-         "thought_process": ["Error encountered during execution"],
-         "status":"error",
-         "sources": []
-      }
+      raise HTTPException(status_code=500, detail="Internal server error") from e
