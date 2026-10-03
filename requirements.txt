@@ -11,6 +11,7 @@ streamlit                   # Frontend dashboard for the chat interface
 numpy                       # Numerical processing
 pytz                        # Timezone handling for logs
 nest-asyncio                # Support for nested async loops in notebooks/streamlit
+ipykernel                   # Python 3.10 kernel for VS Code/Jupyter notebooks
 
 # --- GEMINI EMBEDDINGS ---
 google-generativeai         # Gemini API — embeddings (text-embedding-004 / gemini-embedding-001)

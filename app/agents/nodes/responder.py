@@ -1,16 +1,14 @@
-from app.agents.state import AgentState
-from app.config import settings
-from langchain_groq import ChatGroq
 import logfire
-
-# Portkey-backed LLM: fallback + cache + retry — same .invoke() interface as ChatGroq
-llm = ChatGroq(api_key=settings.GROQ_API_KEY, model=settings.GROQ_MODEL)
+from app.agents.state import AgentState
+from app.gateway import portkey_client, extract_cache_status
 
 
 
 def generate_node(state: AgentState):
    """
-   Synthesizes a response using both Documentation Context AND Conversation
+   Synthesizes a response using both Documentation Context AND Conversation History.
+   Uses the native Portkey client (not LangChain) so we can read the
+   x-portkey-cache-status response header and surface Cache: Hit in the UI.
    """
 
    query = state["current_query"]
@@ -66,15 +64,30 @@ def generate_node(state: AgentState):
 
    with logfire.span("LLM Synthesis"):
       try:
-         content = llm.invoke(prompt).content
-         logfire.info("Response sythesised vida LLM.")
+         response = portkey_client.chat.completions.create(
+            messages=[{"role":"user","content":prompt}],
+            temperature=0.1
+         )
+         content = response.choices[0].message.content
+         cache_status = extract_cache_status(response)
+         is_cache_hit = cache_status == "HIT"
 
+         if is_cache_hit:
+            logfire.info("Gateway Cache Hit — response served from Portkey cache.")
+            plan_update = state["plan"] + ["Cache : HIT"]
+            status = "Cache hit -instant response"
+         else:
+            logfire.info("Response synthesised via LLM")
+            plan_update = state["plan"]
+            status = "Response generated."
+         
          return {
             "final_answer" : content,
-            "status" : "Response generated.",
-            "plan" : state["plan"],
+            "status" : status,
+            "plan" : plan_update,
             "messages" : [{"role":"assistant","content":content}]
          }
 
       except Exception as e:
          logfire.error(f"LLM Genration failed: {e}")
+         raise e

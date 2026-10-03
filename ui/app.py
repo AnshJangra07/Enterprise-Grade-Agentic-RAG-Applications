@@ -17,6 +17,7 @@ try:
    if not token:
       print("ERROR : LOGFIRE_TOKEN is empy or NONE!")
    logfire.configure(token=token)
+   # logfire.instrument_requests() # Disabled due to OpenTelemetry bug on Windows: MeterProvider.get_meter() got multiple values for argument 'version'
    LOGFIRE_STATUS = "Connected & Tracing"
 except Exception as e:
    print(f"Logfire Init error in UI: {e}")
@@ -73,6 +74,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Ask about you documentation..."):
    # Start Trace: User Interaction
    with logfire.span("User Chat Interaction",user_query=prompt,session_id=st.session_state.session_id) :
+      
       st.session_state.messages.append({"role":"user","content":prompt})
       with st.chat_message("user", avatar=USER_AVATAR):
          st.markdown(prompt)
@@ -127,7 +129,7 @@ if prompt := st.chat_input("Ask about you documentation..."):
          curr_text = ""
          for char in full_answer:
             curr_text += char
-            answer_placeholder.markdown(curr_text + "▌")
+            answer_placeholder.markdown(curr_text + " ")
             time.sleep(0.005)
          
          answer_placeholder.markdown(full_answer)
