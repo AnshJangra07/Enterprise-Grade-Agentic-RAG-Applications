@@ -263,25 +263,6 @@ The app is designed to use Groq models through Portkey. In other words:
 - Portkey handles retries, routing, cache, and observability
 - You can change provider behavior centrally without changing application code
 
-### Source retention
-
-The backend maintains the `documents` list so the frontend can display the source chunks and references that were used to answer the question.
-
-## Docs Folder
-
-The project includes deeper notes in `DOCS/` for specific areas:
-
-- `01_SYSTEM_OVERVIEW.md` — overall architecture
-- `02_INGESTION_ENGINE.md` — ingestion and chunking pipeline
-- `03_NODE_INTELLIGENCE.md` — planner/retriever/responder logic
-- `04_TRACING_AND_OBSERVABILITY.md` — logs, metrics, and traces
-- `05_ENVIRONMENT_VARIABLES.md` — all required env settings
-- `06_KNOWN_GOTCHAS.md` — edge cases and troubleshooting
-- `07_FLASHRANK_RERANKING.md` — reranking strategy
-- `08_GUARDRAILS.md` — policy and safety layer details
-- `09_LLM_GATEWAY.md` — Portkey configuration and usage
-- `10_EVALS.md` — evaluation approach and testing notes
-
 ## Troubleshooting
 
 ### 1. Portkey 400 or route errors
